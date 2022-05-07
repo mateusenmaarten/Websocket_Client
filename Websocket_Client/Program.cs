@@ -1,20 +1,14 @@
-﻿using WebSocketSharp.NetCore;
+﻿using System.Text.Json;
+using Websocket_Shared;
+using WebSocketSharp.NetCore;
 
 using (WebSocket ws = new WebSocket("ws://localhost:4200/CardsAgainstHumanity"))
 {
-    string playerName;
-
-    do
-    {
-      playerName = GetUserName();
-    } while (playerName.IsNullOrEmpty());
-
+    var nameMessage = JsonSerializer.Serialize(new Message_Login(GetUserName()));
     ws.OnMessage += Ws_OnMessage;
 
     ws.Connect();
-    ws.Send(playerName);
-
-    
+    ws.Send(nameMessage);
 
     Console.ReadKey();
 }
@@ -26,8 +20,13 @@ void Ws_OnMessage(object? sender, MessageEventArgs e)
 
 string GetUserName()
 {
-    Console.Write("Geef uw speler naam: ");
-    var playerName = Console.ReadLine();
+    var playerName = "";
+    do
+    {
+        Console.Write("Geef uw speler naam: ");
+        playerName = Console.ReadLine();
+        
+    } while (playerName.IsNullOrEmpty());
     return playerName;
 }
 
